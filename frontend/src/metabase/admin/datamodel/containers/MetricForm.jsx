@@ -51,7 +51,15 @@ import Table from "metabase-lib/lib/metadata/Table";
       return errors;
     },
   },
-  (state, { metric }) => ({ initialValues: metric }),
+  (state, { metric }) => {
+    if (metric) {
+      // strip recursive structures (table & metadata) out of metric so they
+      // don't crash redux form's deep equals comparison.
+      let metadata, table;
+      ({ metadata, table, ...metric } = metric);
+    }
+    return { initialValues: metric };
+  },
 )
 export default class MetricForm extends Component {
   renderActionButtons() {

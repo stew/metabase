@@ -56,7 +56,15 @@ import Table from "metabase-lib/lib/metadata/Table";
       revision_message: null,
     },
   },
-  (state, { segment }) => ({ initialValues: segment }),
+  (state, { segment }) => {
+    if (segment) {
+      // strip recursive structures (table & metadata) out of segment so they
+      // don't crash redux form's deep equals comparison.
+      let metadata, table;
+      ({ metadata, table, ...segment } = segment);
+    }
+    return { initialValues: segment };
+  },
 )
 export default class SegmentForm extends Component {
   updatePreviewSummary(datasetQuery) {
